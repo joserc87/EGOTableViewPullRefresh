@@ -220,9 +220,6 @@
 	
 	if (scrollView.contentOffset.y <= - 65.0f && !_loading) {
 		
-		if ([_delegate respondsToSelector:@selector(egoRefreshTableHeaderDidTriggerRefresh:)]) {
-			[_delegate egoRefreshTableHeaderDidTriggerRefresh:self];
-		}
 		
 		[self setState:EGOOPullRefreshLoading];
 		[UIView beginAnimations:nil context:NULL];
@@ -230,6 +227,9 @@
 		scrollView.contentInset = UIEdgeInsetsMake(60.0f, 0.0f, 0.0f, 0.0f);
 		[UIView commitAnimations];
 		
+		if ([_delegate respondsToSelector:@selector(egoRefreshTableHeaderDidTriggerRefresh:)]) {
+			[_delegate egoRefreshTableHeaderDidTriggerRefresh:self];
+		}
 	}
 	
 }
