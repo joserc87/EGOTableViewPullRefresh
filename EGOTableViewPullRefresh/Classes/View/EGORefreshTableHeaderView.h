@@ -30,36 +30,99 @@
 typedef enum{
 	EGOOPullRefreshPulling = 0,
 	EGOOPullRefreshNormal,
-	EGOOPullRefreshLoading,	
+	EGOOPullRefreshLoading,
 } EGOPullRefreshState;
 
 @protocol EGORefreshTableHeaderDelegate;
+/**
+ * Cocoa control for the pull-to-refresh view.
+ *
+ * To use this control:
+ *
+ * 1. Create an object of EGORefreshTableHeaderView.
+ * 2. Add this object as a subview of your UITableView object.
+ * 3. Implement the protocol EGORefreshTableHeaderDelegate in your class
+ * (for example, in your UITableViewController class).
+ * 4. Assign a object of this class as the delegate of the control.
+ */
 @interface EGORefreshTableHeaderView : UIView {
-	
 	id _delegate;
 	EGOPullRefreshState _state;
-
+    
 	UILabel *_lastUpdatedLabel;
 	UILabel *_statusLabel;
 	CALayer *_arrowImage;
 	UIActivityIndicatorView *_activityView;
-	
-
 }
+/** The delegate, implementing the EGORefreshTableHeaderDelegate */
+@property(nonatomic,assign) id delegate;
 
-@property(nonatomic,assign) id <EGORefreshTableHeaderDelegate> delegate;
+#pragma mark - Customization
 
-- (id)initWithFrame:(CGRect)frame arrowImageName:(NSString *)arrow textColor:(UIColor *)textColor;
+/** The color of the text */
+@property(nonatomic,retain) UIColor *textColor;
+/** Use shadow in the text? */
+@property(nonatomic, assign) BOOL textShadowEnabled;
+/** Shadow color of the text*/
+@property(nonatomic, retain) UIColor *textShadowColor;
+/** The image used for the arrow */
+@property(nonatomic,retain) NSString *arrowImagePath;
+/** The position of the arrow, in x */
+@property(nonatomic, assign) CGFloat arrowXPosition;
+/** The position of the activity indicator, in x */
+@property(nonatomic, assign) CGFloat activityXPosition;
 
+/**
+ * Asks the view to refresh the date
+ */
 - (void)refreshLastUpdatedDate;
+
+/**
+ * Tell the view that the containing scroll view did scroll
+ * @param scrollView The containing scroll view
+ */
 - (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView;
+
+/**
+ * Tell the view that the user finished dragging the containing scroll view
+ * @param scrollView The containing scroll view
+ */
 - (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView;
+
+/**
+ * Tell the view that the model has been updated, so the control can go back to the normal state
+ * @param scrollView The containing scroll view
+ */
 - (void)egoRefreshScrollViewDataSourceDidFinishedLoading:(UIScrollView *)scrollView;
 
 @end
+
+
+/**
+ * Delegate for the class EGORefreshTableHeaderView.
+ */
 @protocol EGORefreshTableHeaderDelegate
+
+/**
+ * Tells the delegate that the user triggered the refresh
+ * @param view The control
+ * @note This method is mandatory
+ */
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView*)view;
+
+/**
+ * Ask the delegate if the model is being updated
+ * @param view The control
+ * @note This method is mandatory
+ */
 - (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView*)view;
 @optional
+
+/**
+ * Ask the delegate for the date of the last modification
+ * @param view The control
+ * @note This method is optional
+ */
 - (NSDate*)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView*)view;
+
 @end
